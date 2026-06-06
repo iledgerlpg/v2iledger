@@ -4,51 +4,44 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iLedgerV2 – Data Armada</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script>window.APP_URL='<?= appUrl ?>'; window.CURRENT_PAGE='armada';</script>
-<?!= include('components/navbar-sidebar') ?>
 <style>
-.armada-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.armada-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-color);overflow:hidden;transition:transform .2s,box-shadow .2s}
-.armada-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
-.armada-photo{height:160px;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);position:relative;overflow:hidden}
-.armada-photo img{width:100%;height:100%;object-fit:cover}
-.armada-photo-placeholder{display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.4)}
-.armada-photo-placeholder svg{width:64px;height:64px;stroke:currentColor;fill:none;stroke-width:1}
-.armada-nopol{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.7);color:white;padding:4px 12px;border-radius:20px;font-size:14px;font-weight:700;letter-spacing:.5px;backdrop-filter:blur(4px)}
-.armada-status-dot{position:absolute;top:10px;right:10px;width:10px;height:10px;border-radius:50%;border:2px solid white}
-.armada-status-dot.active{background:var(--success)}
-.armada-status-dot.inactive{background:var(--error)}
-.armada-body{padding:16px}
-.armada-name{font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:2px}
-.armada-type{font-size:12px;color:var(--text-secondary);margin-bottom:12px}
-.armada-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.armada-detail-item .d-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary)}
-.armada-detail-item .d-value{font-size:12px;font-weight:600;color:var(--text-primary);margin-top:1px}
-.armada-footer{padding:12px 16px;border-top:1px solid var(--border-color);display:flex;gap:8px}
-.stnk-status{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.stnk-aman{background:#dcfce7;color:#166534}
-.stnk-warning{background:#fef3c7;color:#92400e}
-.stnk-danger{background:#fee2e2;color:#991b1b}
-.search-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.filter-select{padding:9px 14px;border:1.5px solid var(--border-color);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text-primary);background:var(--bg-card);cursor:pointer;outline:none;min-width:130px}
-.upload-zone{border:2px dashed var(--border-color);border-radius:var(--radius);padding:18px;text-align:center;cursor:pointer;background:var(--gray-50);position:relative;transition:all .2s}
-.upload-zone:hover{border-color:var(--primary)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-zone svg{width:26px;height:26px;stroke:var(--gray-400);fill:none;stroke-width:1.5;margin-bottom:4px}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.toolbar-left{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
+.toolbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.filter-select{padding:9px 14px;border:1.5px solid var(--border-color);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text-primary);background:var(--bg-card);cursor:pointer;outline:none;transition:border-color .2s;min-width:140px}
+.filter-select:focus{border-color:var(--primary)}
+.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.summary-item{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:14px 16px}
+.summary-item .s-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary)}
+.summary-item .s-value{font-size:16px;font-weight:800;color:var(--text-primary);margin-top:4px;letter-spacing:-.3px}
+.upload-zone{border:2px dashed var(--border-color);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-50);position:relative}
+.upload-zone:hover{border-color:var(--primary);background:rgba(13,71,161,.03)}
+.upload-zone svg{width:28px;height:28px;stroke:var(--gray-400);fill:none;stroke-width:1.5;margin-bottom:6px}
 .upload-zone p{font-size:12px;color:var(--text-secondary)}
-.upload-preview{position:relative;margin-top:8px;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border-color)}
-.upload-preview img{width:100%;height:140px;object-fit:cover;display:block}
+.upload-zone p strong{color:var(--primary)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-preview{position:relative;margin-top:10px;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border-color)}
+.upload-preview img{width:100%;max-height:160px;object-fit:cover;display:block}
 .upload-preview-remove{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:6px;background:rgba(0,0,0,.6);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .upload-preview-remove svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
-.view-toggle{display:flex;gap:4px;background:var(--gray-100);padding:3px;border-radius:8px}
-.view-btn{width:32px;height:32px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);background:transparent;transition:all .2s}
-.view-btn.active{background:var(--bg-card);color:var(--primary);box-shadow:0 1px 4px rgba(0,0,0,.1)}
-.view-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.nota-thumb{width:34px;height:34px;border-radius:6px;object-fit:cover;cursor:pointer;border:1.5px solid var(--border-color);transition:transform .2s}
+.nota-thumb:hover{transform:scale(1.1)}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-secondary)}
+.empty-state svg{width:56px;height:56px;stroke:var(--gray-200);fill:none;stroke-width:1.5;margin-bottom:14px}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.lightbox.show{opacity:1;pointer-events:all}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:20px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center}
+@media(max-width:768px){.summary-bar{grid-template-columns:repeat(2,1fr)}.toolbar{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
+
+<div id="navbarMount"></div>
 
 <header class="main-header">
   <button class="header-toggle" onclick="toggleSidebar()">
@@ -217,6 +210,32 @@
 </div>
 
 <script>
+// Penambahan Auth check & Navbar Loader sama seperti halaman Dashboard
+if (!requireAuth()) throw new Error('Not authenticated');
+window.CURRENT_PAGE = 'armada'; // Set page global variable
+
+fetch('navbar.html')
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById('navbarMount').innerHTML = html;
+    document.querySelectorAll('#navbarMount script').forEach(s => {
+      const ns = document.createElement('script');
+      ns.textContent = s.textContent;
+      document.body.appendChild(ns);
+    });
+  });
+
+let currentPage = 1, totalPages = 1;
+let selectedBuktiBase64 = null, selectedBuktiMime = null;
+let searchTimeout = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  setDefaultDT();
+  loadData();
+});
+
+
+
 let allData = [], currentView = 'grid';
 let selectedFotoBase64 = null, selectedFotoMime = null;
 let searchTimeout = null;
