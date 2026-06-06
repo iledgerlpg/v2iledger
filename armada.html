@@ -225,16 +225,6 @@ fetch('navbar.html')
     });
   });
 
-let currentPage = 1, totalPages = 1;
-let selectedBuktiBase64 = null, selectedBuktiMime = null;
-let searchTimeout = null;
-
-document.addEventListener('DOMContentLoaded', () => {
-  setDefaultDT();
-  loadData();
-});
-
-
 
 let allData = [], currentView = 'grid';
 let selectedFotoBase64 = null, selectedFotoMime = null;
