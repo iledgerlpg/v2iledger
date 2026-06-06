@@ -230,6 +230,20 @@
 </div>
 
 <script>
+// Penambahan Auth check & Navbar Loader sama seperti halaman Dashboard
+if (!requireAuth()) throw new Error('Not authenticated');
+window.CURRENT_PAGE = 'karyawan'; // Set page global variable
+
+fetch('navbar.html')
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById('navbarMount').innerHTML = html;
+    document.querySelectorAll('#navbarMount script').forEach(s => {
+      const ns = document.createElement('script');
+      ns.textContent = s.textContent;
+      document.body.appendChild(ns);
+    });
+  });
 let allData = [];
 let searchTimeout = null;
 const avatarBg = ['#0D47A1','#1565C0','#0288D1','#00838F','#558B2F','#6A1B9A','#D84315','#37474F'];
