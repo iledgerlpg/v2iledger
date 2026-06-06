@@ -4,25 +4,44 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iLedgerV2 – User Management</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>window.APP_URL='<?= appUrl ?>'; window.CURRENT_PAGE='user-management';</script>
-<?!= include('components/navbar-sidebar') ?>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
-.user-card{background:var(--bg-card);border-radius:var(--radius-lg);border:1px solid var(--border-color);padding:20px;display:flex;align-items:flex-start;gap:16px;transition:box-shadow .2s}
-.user-card:hover{box-shadow:var(--shadow-md)}
-.user-avatar-lg{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:white;flex-shrink:0}
-.user-info-main{flex:1;min-width:0}
-.user-name-lg{font-size:15px;font-weight:700;color:var(--text-primary)}
-.user-email-lg{font-size:12px;color:var(--text-secondary);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.user-meta{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
-.user-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
-.users-grid{display:flex;flex-direction:column;gap:12px}
-.pending-banner{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fde68a;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
-.pending-banner svg{width:24px;height:24px;stroke:#D97706;fill:none;stroke-width:2;flex-shrink:0}
-.pending-banner .pb-text{font-size:14px;font-weight:600;color:#92400e}
-.pending-banner .pb-count{background:#D97706;color:white;padding:2px 10px;border-radius:10px;font-size:12px;font-weight:700;margin-left:8px}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.toolbar-left{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
+.toolbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.filter-select{padding:9px 14px;border:1.5px solid var(--border-color);border-radius:var(--radius);font-family:var(--font);font-size:13px;color:var(--text-primary);background:var(--bg-card);cursor:pointer;outline:none;transition:border-color .2s;min-width:140px}
+.filter-select:focus{border-color:var(--primary)}
+.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.summary-item{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border-color);padding:14px 16px}
+.summary-item .s-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text-secondary)}
+.summary-item .s-value{font-size:16px;font-weight:800;color:var(--text-primary);margin-top:4px;letter-spacing:-.3px}
+.upload-zone{border:2px dashed var(--border-color);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gray-50);position:relative}
+.upload-zone:hover{border-color:var(--primary);background:rgba(13,71,161,.03)}
+.upload-zone svg{width:28px;height:28px;stroke:var(--gray-400);fill:none;stroke-width:1.5;margin-bottom:6px}
+.upload-zone p{font-size:12px;color:var(--text-secondary)}
+.upload-zone p strong{color:var(--primary)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-preview{position:relative;margin-top:10px;border-radius:var(--radius);overflow:hidden;border:1.5px solid var(--border-color)}
+.upload-preview img{width:100%;max-height:160px;object-fit:cover;display:block}
+.upload-preview-remove{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:6px;background:rgba(0,0,0,.6);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upload-preview-remove svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.nota-thumb{width:34px;height:34px;border-radius:6px;object-fit:cover;cursor:pointer;border:1.5px solid var(--border-color);transition:transform .2s}
+.nota-thumb:hover{transform:scale(1.1)}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-secondary)}
+.empty-state svg{width:56px;height:56px;stroke:var(--gray-200);fill:none;stroke-width:1.5;margin-bottom:14px}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.lightbox.show{opacity:1;pointer-events:all}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain}
+.lightbox-close{position:absolute;top:20px;right:20px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center}
+@media(max-width:768px){.summary-bar{grid-template-columns:repeat(2,1fr)}.toolbar{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
+
+<div id="navbarMount"></div>
 
 <header class="main-header">
   <button class="header-toggle" onclick="toggleSidebar()">
