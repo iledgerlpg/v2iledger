@@ -593,7 +593,7 @@ function clearAlert() {
 }
 
 function callAPI(action, payload) {
-  return fetch(APP_URL, {
+  return fetch(APP_SCRIPT_URL, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ action, ...payload })
