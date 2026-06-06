@@ -164,6 +164,21 @@
 </main>
 
 <script>
+  <script>
+// Penambahan Auth check & Navbar Loader sama seperti halaman Dashboard
+if (!requireAuth()) throw new Error('Not authenticated');
+window.CURRENT_PAGE = 'labarugi'; // Set page global variable
+
+fetch('navbar.html')
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById('navbarMount').innerHTML = html;
+    document.querySelectorAll('#navbarMount script').forEach(s => {
+      const ns = document.createElement('script');
+      ns.textContent = s.textContent;
+      document.body.appendChild(ns);
+    });
+  });
 let currentPeriod = 'monthly';
 let lrChart = null;
 
